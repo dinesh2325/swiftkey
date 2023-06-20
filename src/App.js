@@ -1,10 +1,14 @@
+import react from "react";       
+import Type_logic from "./Components/Type_logic";
 
 
-function App() {
+const App = () => {
+ 
   return (
-   <>
-    <h1>HEllo GUYS</h1>
-   </>
+    <>
+     
+      <Type_logic/>
+    </>
   );
 }
 

@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.char_color_green{
+    background-color: green;
+}
+.char_color_red{
+    background-color: red;
+}
