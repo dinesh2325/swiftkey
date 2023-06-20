@@ -1,11 +1,17 @@
+import React from 'react'
 
+import Homepage from './homepage/Homepage'
+import Register from './register/Register'
+import Login from './login/Login'
 
 function App() {
   return (
    <>
-    <h1>HEllo GUYS</h1>
+   {/* <Homepage/> */}
+   <Login/>
+   {/* <Register/> */}
    </>
-  );
+  )
 }
 
-export default App;
+export default App
