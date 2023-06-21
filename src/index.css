@@ -9,3 +9,9 @@
 .char_color_red{
     background-color: red;
 }
+
+.worddd{
+    background-color: rgb(129, 134, 132);
+    border-radius: 5px;
+    padding: 2px;
+}
