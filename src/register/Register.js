@@ -1,9 +1,17 @@
 import React,{useState} from 'react'
 import axios from 'axios'
 import "./Register.css"
+import { useNavigate } from 'react-router-dom'
 
 
 const Register=()=> {
+    const navigate = useNavigate();
+
+    const goToLogin=()=>{
+        navigate("/login");
+    }
+
+    // yaha saara data user me store ho jayega jo bhi update hua hai fill karne ke baad
     const [user, setUser] = useState({
 
         name: "",
@@ -15,7 +23,7 @@ const Register=()=> {
 
     )
    
-
+// same as case of login ==> refer login component
 const handleChange = e=>{
    
     const {name, value}=e.target
@@ -32,13 +40,18 @@ const handleChange = e=>{
 //post karne ke liye axios ka use kiya gya hai
 const register=()=>{
     const {name,email,password,reEnterPassword}=user
-    if(nmae && email && password && (password===reEnterPassword)){
-        alert("posted")
+    if(name && email && password && (password===reEnterPassword)){
+        
         axios.post("http://localhost:9002/register",user)
+        .then(res=> console.log(res))
     }
     else{
         alert("invalid input")
     }
+
+    navigate("/login")
+
+    
     
 }
 
@@ -79,7 +92,7 @@ const register=()=>{
                 </div>
 
                 <p class="text-center text-muted mt-5 mb-0">Have already an account? <a href="#!"
-                    class="fw-bold text-body"><u>Login here</u></a></p>
+                    class="fw-bold text-body" onClick={()=>goToLogin()}><u>Login here</u></a></p>
 
             </form>
 
