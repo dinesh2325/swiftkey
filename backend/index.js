@@ -7,8 +7,8 @@ app.use(express.json())
 app.use(express.urlencoded())
 app.use(cors())
 
-// mongodb connection 
-mongoose.connect("mongodb://127.0.0.1:27017/myLoginRegisterDB",{
+// mongodb connection         
+mongoose.connect("mongodb+srv://dineshkumarpaliwal83:giJR9Ecim2dnlSoI@test.cfhgstf.mongodb.net/?retryWrites=true&w=majority",{
 useNewUrlParser: true,
 useUnifiedTopology:true
 }).then((res)=>{
@@ -33,7 +33,7 @@ app.post("/login",(req,res)=>{
     User.findOne({email:email},(err,user)=>{
         if(user){
                 if(password===user.password){
-                    res.send({message:"Login successfull",user:user})
+                    res.send({message:"Login successfull",user:user});
                 }
                 else{
                     res.send({message:"Password didn't match"})
@@ -79,3 +79,5 @@ app.post("/register",(req,res)=>{
 app.listen(9002,()=>{
     console.log("BE started at port 9002")
 })
+
+

@@ -9,15 +9,14 @@ import { BrowserRouter, Routes, Route, Router, Link } from "react-router-dom";
 function App() {
   
   return (
-   
   
-
 <>
    <BrowserRouter>
    <Routes>
-    <Route path='/' element={<Homepage/>  }></Route>
+    <Route exact path='/' element={<Homepage/>  }></Route>
     <Route path='/login' element={<Login/>}></Route>
     <Route path='/register' element={<Register/>}></Route>
+    <Route path='/test' element={<Type_logic/>}></Route>
    </Routes>
    </BrowserRouter>
    

@@ -31,11 +31,37 @@ setUser({
 
 // when login button is pressed ths function is called which post the data to server
 // and move to home page
-const login =()=>{
-  axios.post("http://localhost:9002/login",user)
-  .then(res=>alert(res.data.message))
-  navigate("/");
+
+async function login(e){
+  e.preventDefault();
+  try{
+    axios.post("http://localhost:9002/login", user)
+      .then(res=>{
+          if(res.data.message=="Login successfull"){
+              navigate("/test")
+          }
+          else if(res.data.message=="Password didn't match"){
+              alert("Password didn't match")
+          }
+          else{
+            alert("user not found")
+          }
+         
+      })
+      .catch(e=>{
+        alert("User not found")
+      })
+
+  }
+  catch(e){
+    alert(e)
+      console.log(e);
+
+  }
+
 }
+
+
 
   return (
     console.log(user),

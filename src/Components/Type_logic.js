@@ -2,17 +2,23 @@ import { useState, useEffect, useRef } from "react";       //imported for focus 
 import { generate } from 'random-words';                  //random-words is npm package ....generate()... generate random word
 
 import { useSpeechSynthesis } from 'react-speech-kit';    //libarary for producing sound
-import index from '../index.css'
+        
+import index from '../index.css';
 import TextField from '@mui/material/TextField';
 
 
+
 const NUMB_OF_WORDS = 150;                                //max word in paragraph
-const SECOND = 60;                                        //total time
+
 
 
 const Type_logic = () => {
+   
+  //for timer custmization
+  const [TimerChanger,setTimeChanger]=useState(60);
+  
   const [words, setWords] = useState([]);                 //words is a array of paragraph with random word
-  const [countDown, setCountDown] = useState(SECOND);     //state for timer
+  const [countDown, setCountDown] = useState(TimerChanger);     //state for timer
   const [currInput, setcurrInput] = useState("");            //currently entered char
   const [currWordIndex, setCurrWordsIndex] = useState(0);
   const [Correct, setCorrect] = useState(0);
@@ -27,10 +33,10 @@ const Type_logic = () => {
   //for producing sound 
   const [value, setValue] = useState('');
   const { speak } = useSpeechSynthesis();     
- 
+
 
   useEffect(() => {
-    setWords(generatewords())
+    setWords(generatewords())                              //jab refresh kiya jata hai to newword is produce
   }, []);
 
   useEffect(() => {                                        //input get focused whenever status is "started"
@@ -45,8 +51,10 @@ const Type_logic = () => {
     return new Array(NUMB_OF_WORDS).fill(null).map(() => generate())
   }
 
+   
 
-  function start()                                      //triggered when start button clicked 
+
+  function start()                                    //triggered when start button clicked 
   {
     if (status === "finish") {
       setWords(generatewords());
@@ -57,15 +65,16 @@ const Type_logic = () => {
       setCurrChar("");
     }
 
-    if (status != "started") {
+    if (status != "started") {                      //whenever test started countdown start then stop at 0
       setstatus("started");
       let interval = setInterval(() => {
         setCountDown((pre) => {
-          if (pre === 0) {
+          if (pre === 0) 
+          {
             clearInterval(interval);
             setcurrInput("");
             setstatus("finish");
-            return SECOND;
+            return TimerChanger;
           }
           else
             return pre - 1;
@@ -75,10 +84,6 @@ const Type_logic = () => {
 
   }
 
-
-
-
- 
   function handleKeyDown({ keyCode, key })                //triggered when input is given and it recognize the key 
   {
      
@@ -111,14 +116,14 @@ const Type_logic = () => {
     else setIncorrect(Incorrect + 1);
   }
 
-  function getCharClass(wordIdx, charIdx, char)          //assign color classess on the basis of wrong or right pressed word
+  function getCharClass(wordIdx, charIdx, char)        //assign color classess on the basis of wrong or right pressed word
   {
     if (wordIdx === currWordIndex && charIdx === currCharIndex && currChar && status != "finish") {
       
       if (char === currChar) {
-        return "char_color_green ";              //class for right char
+        return "char_color_green ";                   //class for right char
       }
-      else return "char_color_red ";             //class for wrong char
+      else return "char_color_red ";                  //class for wrong char
     }
     else if (wordIdx === currCharIndex && currCharIndex >= words[currWordIndex].length) {
       return "char_color_red";
@@ -136,20 +141,37 @@ const Type_logic = () => {
   return (
     <>
 
+{/*TimerChanger is initialy 60 and that can be changed with select target,,,,
+after setting TimerChanger value we assign it to cuntdouwn,,,,,,,,,,,,,
+ jo settimeinterval se decrease ho to jata hai */}
+
+ {/* timer_custmizer */}
+<label for="Timer">Time Duration:</label>
+<select name="Timer" id="Timer"  onClick={(event)=>{
+  setTimeChanger(event.target.value)
+
+  //value of counter get updated through Timer dropdown
+  if(status!="started"){
+    setCountDown(event.target.value);
+  }
+  }
+}>
+  <option value="60"> 1 Minute</option>
+  <option value="120">2 Minute</option>
+  <option value="180">3 Minute</option>
+  <option value="300">5 Minute</option>
+</select>
+
 
 
           {/*timer component*/}
-          
       <div className="flex justify-center ... mt-9 ">                               
         <h2 className="box-content  p-4 border-4 ... px-2 py-2 text-purple-600 text-xl">
   {countDown}</h2>
       </div>
+    
 
-
-     
-
-
-
+    
          <>
          {/* paragraph  */}
          <div className="flex justify-center ... mt-12">
@@ -199,13 +221,24 @@ const Type_logic = () => {
 
 
 
+
         {/* contest start button */}
         <div className="ml-5 w-49 py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mt-6">
           <button onClick={start}>start</button>
         </div>
+
+
+         {/* contest stop button */}
+        <div className="ml-5 w-49 py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mt-6">
+          <button onClick={()=>{
+              setstatus("finish");
+             { start()}
+             setCountDown(1);
+          }}>stop</button>
+        </div>
+
       </div>
  
-      
 
 
 

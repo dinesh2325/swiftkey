@@ -13,10 +13,12 @@ const Homepage=()=> {
 const goToRegister=()=>{
   navigate("/register");
 }
+
+const goTotest=()=>{
+  navigate("/test");
+}
   return (
    
-   
-    
     <>
      
     
@@ -25,8 +27,7 @@ const goToRegister=()=>{
       <div className='space-x-8'>
       <Button variant="contained" color="success" className='mx-10 flex' onClick={()=>goToRegister()}>Register</Button>
       <Button variant="contained" color="success" className='mx-10 flex' onClick={()=>goToLogin()}>Login</Button>
-      <Button variant="contained" color="success" className='mx-10 flex'>Continue as a Guest</Button>
-      
+      <Button variant="contained" color="success" className='mx-10 flex' onClick={()=>goTotest()}>Continue as a Guest</Button>
       </div>
       
       
