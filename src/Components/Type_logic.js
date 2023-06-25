@@ -5,14 +5,22 @@ import { useSpeechSynthesis } from 'react-speech-kit';    //libarary for produci
         
 import index from '../index.css';
 import TextField from '@mui/material/TextField';
+import { useNavigate } from 'react-router-dom';
+import Button from '@mui/material/Button';
+
+import Profile from "../Profile/Profile";
 
 
 
 const NUMB_OF_WORDS = 150;                                //max word in paragraph
 
 
-
 const Type_logic = () => {
+  const navigate = useNavigate();
+
+  const goToProfile=()=>{
+    navigate("/Profile");
+  }
    
   //for timer custmization
   const [TimerChanger,setTimeChanger]=useState(60);
@@ -136,10 +144,16 @@ const Type_logic = () => {
     if(wordIdx===currWordIndex) return "worddd";
   }
 
+  
+
 
   
   return (
     <>
+
+<Button variant="contained" color="success" className='mx-10 flex justify-end' onClick={()=>goToProfile()}>Profile</Button>
+
+
 
 {/*TimerChanger is initialy 60 and that can be changed with select target,,,,
 after setting TimerChanger value we assign it to cuntdouwn,,,,,,,,,,,,,
