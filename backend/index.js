@@ -7,8 +7,11 @@ app.use(express.json())
 app.use(express.urlencoded())
 app.use(cors())
 
-// mongodb connection         
-mongoose.connect("mongodb+srv://dineshkumarpaliwal83:giJR9Ecim2dnlSoI@test.cfhgstf.mongodb.net/?retryWrites=true&w=majority",{
+
+//mongodb://127.0.0.1:27017/myLoginRegisterDB
+// mongodb connection 
+mongoose.connect("mongodb://127.0.0.1:27017/myLoginRegisterDB",{
+ 
 useNewUrlParser: true,
 useUnifiedTopology:true
 }).then((res)=>{
@@ -73,7 +76,21 @@ app.post("/register",(req,res)=>{
         }
     })
 })
-   
+
+//created page that will have all data of registered user 
+
+app.get("/getAllUser",async(req,res)=>{
+    try{
+const allUser= await User.find({});
+res.send({status: "ok",data: allUser})
+    }
+    catch(err0r){
+console.log(error);
+    }
+})
+
+
+
 
 //listening on port 9002
 app.listen(9002,()=>{
