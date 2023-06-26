@@ -22,7 +22,12 @@ useUnifiedTopology:true
 const userSchema= new mongoose.Schema({
     name:String,
     email:String,
-    password:String
+    password:String,
+    wpms:{
+        type:Array,
+        unique: true
+    },
+    maxwpm:String
 })
 
 const User=new mongoose.model("User",userSchema) //User naam ka modal create ho gya jo userSchema jaisa hai
@@ -36,7 +41,7 @@ app.post("/login",(req,res)=>{
     User.findOne({email:email},(err,user)=>{
         if(user){
                 if(password===user.password){
-                    res.send({message:"Login successfull",user:user});
+                    res.send({message:"Login successfull",user:user._id});
                 }
                 else{
                     res.send({message:"Password didn't match"})
@@ -59,12 +64,12 @@ app.post("/register",(req,res)=>{
             res.send({message:"User already registered"})
         }
         else{
-            const user= new User({
+            const user= new User({ // yha user data iss type ke format me store ho jayega
                 name,
                 email,
                 password
             })
-            user.save(err=>{
+            user.save(err=>{              //store hone ke baad save ho jayega
                 if(err){
                     res.send(err)
                 }
@@ -82,12 +87,64 @@ app.post("/register",(req,res)=>{
 app.get("/getAllUser",async(req,res)=>{
     try{
 const allUser= await User.find({});
-res.send({status: "ok",data: allUser})
+res.send(allUser)
     }
     catch(err0r){
 console.log(error);
     }
 })
+
+// Api for individual data
+
+app.get('/:Id', async(req, res) => {
+    
+    User.findOne({ _id:req.params.Id}) // req.param.id ko match karega db id se
+      .then(result => {
+        if (result) {
+            
+          res.json(result.name);
+        } else {
+          res.status(404).json({ error: 'User not found' });
+        }
+      })
+  });
+
+
+  app.post('/updateProfile/:Id', async (req, res) => {
+    const user = await User.findOne({ _id: req.params.Id });
+    if (user) {
+      await User.updateOne(
+        { _id: req.params.Id },
+        {$addToSet: { wpms: req.body}}
+      ).exec();
+    } 
+     let maxi="";
+     if(user.maxwpm) maxi=user.maxwpm;
+
+     user.wpms.forEach(data => {
+        if(data.Correct>maxi) maxi=data.Correct;
+     });
+
+     await User.updateOne({_id:req.params.Id},{maxwpm:maxi}).then(res=>{
+     
+     })
+  });
+
+  app.get('/getprofile/:Id', async(req, res) => {
+    
+
+     User.findOne({ _id:req.params.Id}) // req.param.id ko match karega db id se
+      .then(result => {
+        if (result) {
+            
+          res.json(result);
+        } else {
+          res.status(404).json({ error: 'User not found' });
+        }
+      })
+  });
+
+
 
 
 

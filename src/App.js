@@ -17,8 +17,8 @@ function App() {
     <Route exact path='/' element={<Homepage/>  }></Route>
     <Route path='/login' element={<Login/>}></Route>
     <Route path='/register' element={<Register/>}></Route>
-    <Route path='/test' element={<Type_logic/>}></Route>
-    <Route path='/profile' element={<Profile/>}></Route>
+    <Route path='/test/:userid' element={<Type_logic/>}></Route>
+    <Route path='/profile/:userid' element={<Profile/>}></Route>
    </Routes>
    </BrowserRouter>
    
