@@ -1,35 +1,60 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import userEvent from '@testing-library/user-event';
+import { useParams } from 'react-router-dom';
 
 function Profile() {
-  const [Userdata, setData] = useState([]);
+    const {userid}=useParams();
 
-  useEffect(() => {
-    axios.get('http://localhost:9002/getAllUser')
-      .then(response => {
+    const [profile,setProfile]=useState({
+      name: "",
+      email: "",
+      maxwpm:"",
+      wpm:[]
+    });
+    useEffect(() => {    
+      axios
+        .get(`http://localhost:9002/getProfile/${userid}`)
+        .then(response => {
+          
+       
+          setProfile(prevProfile => ({
+            ...prevProfile,
+            name: response.data.name,
+            email: response.data.email,
+            maxwpm: response.data.maxwpm,
+            wpm: response.data.wpms
+          }));
         
-        setData(response.data);
-        console.log(Userdata);
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  }, [])
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }, [userid]);
+      
+    
+      
+    
+ 
 
-  console.log(Userdata)
+  return (
 
-//   return (
+    <div>
+        <div>
+        <h1>Hello</h1>
+       <h1>{profile.name}</h1> 
+       <h1>{profile.email}</h1> 
+       <h1>{profile.maxwpm}</h1>    
 
-//     <div>
-//         User data
+       {profile.wpm && profile.wpm.map((data) => (
+        <p>{data.Correct}</p>
+      ))} 
+    </div>
 
-//         {Userdata.map((data)=>{
-//             return (
-//             <div>{data.name}</div>
-//             )
-//         })}
-//     </div>
-//   )
+        
+
+    </div>
+  )
 
 
 
@@ -39,4 +64,7 @@ function Profile() {
 }
 
 export default Profile;
+
+
+
 

@@ -32,13 +32,21 @@ setUser({
 // when login button is pressed ths function is called which post the data to server
 // and move to home page
 
+
 async function login(e){
+
+
   e.preventDefault();
   try{
     axios.post("http://localhost:9002/login", user)
       .then(res=>{
+
+        
           if(res.data.message=="Login successfull"){
-              navigate("/test")
+        //  console.log(user);
+        //  console.log(res.data.user);
+
+              navigate("/test/"+res.data.user);   //user id is send by backend as res.data.send
           }
           else if(res.data.message=="Password didn't match"){
               alert("Password didn't match")

@@ -7,8 +7,11 @@ import index from '../index.css';
 import TextField from '@mui/material/TextField';
 import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
-
+import { useParams } from "react-router-dom";
+import axios from "axios";
 import Profile from "../Profile/Profile";
+
+
 
 
 
@@ -16,10 +19,16 @@ const NUMB_OF_WORDS = 150;                                //max word in paragrap
 
 
 const Type_logic = () => {
+
+  const [me,setMe]=useState("");
+  
+
+  const {userid}=useParams();
+  
   const navigate = useNavigate();
 
   const goToProfile=()=>{
-    navigate("/Profile");
+    navigate("/Profile/"+userid);
   }
    
   //for timer custmization
@@ -144,14 +153,50 @@ const Type_logic = () => {
     if(wordIdx===currWordIndex) return "worddd";
   }
 
+  const findname=()=>{
+    axios.get(`http://localhost:9002/${userid}`) //yeh link me jo store hai isme mil jaygei
+      .then(response => {
+           setMe(response.data);
+           
+           console.log("i m here")
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
+  const mywpm=()=>{
+
+    try{
+      axios.post(`http://localhost:9002/updateProfile/${userid}`, {Correct})
+        .then(res=>{
+           console.log("updated");
+           console.log(res.data);
+        })
+        .catch(e=>{
+          alert("oops")
+        })
+    }
+    catch(error){
+        console.log(error);
+    }
+  }
+ 
+
   
 
-
-  
   return (
     <>
 
-<Button variant="contained" color="success" className='mx-10 flex justify-end' onClick={()=>goToProfile()}>Profile</Button>
+
+{findname()}
+{me}
+
+
+
+<Button variant="contained" color="success" className='mx-10 flex' onClick={goToProfile}>Profile</Button>
+
+
 
 
 
@@ -254,7 +299,7 @@ after setting TimerChanger value we assign it to cuntdouwn,,,,,,,,,,,,,
       </div>
  
 
-
+       
 
 
       {/* wpm and accuracy will be shown if contest is ended status ...finish.. */}
@@ -265,6 +310,10 @@ after setting TimerChanger value we assign it to cuntdouwn,,,,,,,,,,,,,
 
             <div className="text-purple-600 ml-20 mt-10  text-2xl font-medium tracking-normal" >Accuracy : {Math.round((Correct / (Correct + Incorrect)) * 100)}%</div>
       
+
+       {mywpm()}
+
+
         </div>
       )}
 

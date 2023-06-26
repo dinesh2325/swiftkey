@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 
 
 const Register=()=> {
+    //to navigate to login page after register button is clicked
     const navigate = useNavigate();
 
     const goToLogin=()=>{
