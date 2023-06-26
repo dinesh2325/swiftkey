@@ -13,11 +13,11 @@ const Login=()=> {
 }
 
   const [user, setUser] = useState({
-email: "",
- password: "",
+   email: "",
+   password: "",
     }
-
 )
+
 
 // when the value is entered int he boxes, event is fired, this stores the data in their respective field
 const handleChange = e=>{
@@ -38,7 +38,7 @@ async function login(e){
     axios.post("http://localhost:9002/login", user)
       .then(res=>{
           if(res.data.message=="Login successfull"){
-              navigate("/test")
+              navigate("/test/"+ res.data.user);
           }
           else if(res.data.message=="Password didn't match"){
               alert("Password didn't match")

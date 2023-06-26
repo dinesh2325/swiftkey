@@ -48,11 +48,7 @@ const register=()=>{
     else{
         alert("invalid input")
     }
-
     navigate("/login")
-
-    
-    
 }
 
 

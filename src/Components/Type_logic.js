@@ -1,27 +1,21 @@
 import { useState, useEffect, useRef } from "react";       //imported for focus on input
 import { generate } from 'random-words';                  //random-words is npm package ....generate()... generate random word
-
-import { useSpeechSynthesis } from 'react-speech-kit';    //libarary for producing sound
-        
+import { useSpeechSynthesis } from 'react-speech-kit';    //libarary for producing sound     
 import index from '../index.css';
 import TextField from '@mui/material/TextField';
-import { useNavigate } from 'react-router-dom';
+import axios from "axios";
 import Button from '@mui/material/Button';
-
-import Profile from "../Profile/Profile";
-
-
+import { useNavigate, useParams } from "react-router-dom";
+ import { Navigate } from "react-router-dom";
 
 const NUMB_OF_WORDS = 150;                                //max word in paragraph
 
 
-const Type_logic = () => {
-  const navigate = useNavigate();
 
-  const goToProfile=()=>{
-    navigate("/Profile");
-  }
-   
+const Type_logic = () => {
+  const {userId}=useParams();
+  const navigate=useNavigate();
+  
   //for timer custmization
   const [TimerChanger,setTimeChanger]=useState(60);
   
@@ -41,7 +35,7 @@ const Type_logic = () => {
   //for producing sound 
   const [value, setValue] = useState('');
   const { speak } = useSpeechSynthesis();     
-
+  const [me,setMe]=useState("");
 
   useEffect(() => {
     setWords(generatewords())                              //jab refresh kiya jata hai to newword is produce
@@ -54,7 +48,12 @@ const Type_logic = () => {
   }, [status]);
 
 
+  const goToProfile=()=>{
+    navigate("/profile/"+userId);
+  }
 
+
+  
   function generatewords() {                            //function generate random array of words
     return new Array(NUMB_OF_WORDS).fill(null).map(() => generate())
   }
@@ -96,6 +95,7 @@ const Type_logic = () => {
   {
      
     if (keyCode === 32) {                                //if space bar is pressed
+      
       speak({ text: value });                            //whenever space pressed word pronounced ;
       checkMatch();
       setcurrInput("");
@@ -140,20 +140,54 @@ const Type_logic = () => {
 
   }
  
+  //color-class for char word
   function getwordClass(wordIdx){
     if(wordIdx===currWordIndex) return "worddd";
   }
 
-  
+
+  const findname=()=>{
+    axios.get(`http://localhost:9002/getname/${userId}`)
+      .then(response => {
+           setMe(response.data);
+           console.log("i m here")
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
+
+
+  const mywpm=()=>{
+
+    try{
+      axios.post(`http://localhost:9002/updateProfile/${userId}`, {Correct})
+        .then(res=>{
+           console.log("updated");
+           console.log(res.data);
+        })
+        .catch(e=>{
+          alert("oops")
+        })
+    }
+    catch(error){
+        console.log(error);
+    }
+  }
+
+
+ 
+ 
 
 
   
   return (
     <>
+   {findname()}
+   {me}
 
-<Button variant="contained" color="success" className='mx-10 flex justify-end' onClick={()=>goToProfile()}>Profile</Button>
-
-
+   <Button variant="contained" color="success" className='mx-10 flex' onClick={()=>goToProfile()}>profile</Button>
 
 {/*TimerChanger is initialy 60 and that can be changed with select target,,,,
 after setting TimerChanger value we assign it to cuntdouwn,,,,,,,,,,,,,
@@ -170,6 +204,7 @@ after setting TimerChanger value we assign it to cuntdouwn,,,,,,,,,,,,,
   }
   }
 }>
+   <option value="30"> 1/2 Minute</option>
   <option value="60"> 1 Minute</option>
   <option value="120">2 Minute</option>
   <option value="180">3 Minute</option>
@@ -177,7 +212,7 @@ after setting TimerChanger value we assign it to cuntdouwn,,,,,,,,,,,,,
 </select>
 
 
-
+     
           {/*timer component*/}
       <div className="flex justify-center ... mt-9 ">                               
         <h2 className="box-content  p-4 border-4 ... px-2 py-2 text-purple-600 text-xl">
@@ -264,13 +299,18 @@ after setting TimerChanger value we assign it to cuntdouwn,,,,,,,,,,,,,
             <div className=" text-purple-600 mr-20 mt-10  text-2xl font-medium tracking-normal">WPM : {Correct}</div>
 
             <div className="text-purple-600 ml-20 mt-10  text-2xl font-medium tracking-normal" >Accuracy : {Math.round((Correct / (Correct + Incorrect)) * 100)}%</div>
-      
-        </div>
-      )}
 
+            {mywpm()}
+            
+        </div>
+       
+      )}
+   
+     
 
 
     </>
+
   );
 }
 

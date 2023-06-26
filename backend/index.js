@@ -19,15 +19,22 @@ useUnifiedTopology:true
 }).catch((err)=>{
     console.log(err)
 })
+
+
 const userSchema= new mongoose.Schema({
     name:String,
     email:String,
-    password:String
+    password:String,
+    wpms:{
+        type:Array,
+        unique: true
+    },
+    maxwpm:String
+  
 })
 
+
 const User=new mongoose.model("User",userSchema) //User naam ka modal create ho gya jo userSchema jaisa hai
-
-
 //jab login pe click hua toh saara data req.body me aa gya
 // yha ham uss data ko store kar lenge
 // DB me find karenge, mil gya toh passwrod match kagenge 
@@ -36,7 +43,7 @@ app.post("/login",(req,res)=>{
     User.findOne({email:email},(err,user)=>{
         if(user){
                 if(password===user.password){
-                    res.send({message:"Login successfull",user:user});
+                    res.send({message:"Login successfull",user:user._id});
                 }
                 else{
                     res.send({message:"Password didn't match"})
@@ -82,7 +89,7 @@ app.post("/register",(req,res)=>{
 app.get("/getAllUser",async(req,res)=>{
     try{
 const allUser= await User.find({});
-res.send({status: "ok",data: allUser})
+res.send(allUser)
     }
     catch(err0r){
 console.log(error);
@@ -91,6 +98,58 @@ console.log(error);
 
 
 
+app.get('/getname/:Id', async(req, res) => {
+    
+    User.findOne({ _id:req.params.Id})
+      .then(result => {
+        if (result) {
+          res.json(result.name);
+        } else {
+          res.status(404).json({ error: 'User not found' });
+        }
+      })
+  });
+
+
+  app.post('/updateProfile/:Id', async (req, res) => {
+    const user = await User.findOne({ _id: req.params.Id });
+    if (user) {
+      await User.updateOne(
+        { _id: req.params.Id },
+        {$addToSet: { wpms: req.body}}
+      ).exec();
+    } 
+     let maxi="";
+     if(user.maxwpm) maxi=user.maxwpm;
+    console.log(user.wpms);
+     user.wpms.forEach(data => {
+        if(data.Correct>maxi) maxi=data.Correct;
+     });
+
+     
+     await User.updateOne({_id:req.params.Id},{maxwpm:maxi}).then(res=>{
+     
+     })
+  });
+
+
+
+
+
+
+  app.get('/getProfile/:Id', async(req, res) => {
+   
+    User.findOne({ _id:req.params.Id})
+        .then(result => {
+          if (result) {
+            res.json(result);
+          } else {
+            res.status(404).json({ error: 'User not found' });
+          }
+        })
+    });
+
+   
 
 //listening on port 9002
 app.listen(9002,()=>{
