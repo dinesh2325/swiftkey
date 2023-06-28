@@ -13,11 +13,11 @@ const Login=()=> {
 }
 
   const [user, setUser] = useState({
-   email: "",
-   password: "",
+email: "",
+ password: "",
     }
-)
 
+)
 
 // when the value is entered int he boxes, event is fired, this stores the data in their respective field
 const handleChange = e=>{
@@ -32,13 +32,21 @@ setUser({
 // when login button is pressed ths function is called which post the data to server
 // and move to home page
 
+
 async function login(e){
+
+
   e.preventDefault();
   try{
     axios.post("http://localhost:9002/login", user)
       .then(res=>{
+
+        
           if(res.data.message=="Login successfull"){
-              navigate("/test/"+ res.data.user);
+        //  console.log(user);
+        //  console.log(res.data.user);
+
+              navigate("/test/"+res.data.user);   //user id is send by backend as res.data.send
           }
           else if(res.data.message=="Password didn't match"){
               alert("Password didn't match")

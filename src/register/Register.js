@@ -1,13 +1,14 @@
-import React,{useState} from 'react'
+import React, { useState } from 'react'
 import axios from 'axios'
 import "./Register.css"
 import { useNavigate } from 'react-router-dom'
 
 
-const Register=()=> {
+const Register = () => {
+    //to navigate to login page after register button is clicked
     const navigate = useNavigate();
 
-    const goToLogin=()=>{
+    const goToLogin = () => {
         navigate("/login");
     }
 
@@ -22,43 +23,43 @@ const Register=()=> {
     }
 
     )
-   
-// same as case of login ==> refer login component
-const handleChange = e=>{
-   
-    const {name, value}=e.target
-    setUser({
-        ...user,
-        [name]:value
-    })
-}
+
+    // same as case of login ==> refer login component
+    const handleChange = e => {
+
+        const { name, value } = e.target
+        setUser({
+            ...user,
+            [name]: value
+        })
+    }
 
 
-//yaha jab onchange event ho rha tab register function call ho rha,
-// is funtion me saara data post ho rha jo bhi fill kiya gya hai,
-// but kuch conditions ke saath
-//post karne ke liye axios ka use kiya gya hai
-const register=()=>{
-    const {name,email,password,reEnterPassword}=user
-    if(name && email && password && (password===reEnterPassword)){
-        
-        axios.post("http://localhost:9002/register",user)
-        .then(res=> console.log(res))
+    //yaha jab onchange event ho rha tab register function call ho rha,
+    // is funtion me saara data post ho rha jo bhi fill kiya gya hai,
+    // but kuch conditions ke saath
+    //post karne ke liye axios ka use kiya gya hai
+    const register = () => {
+        const { name, email, password, reEnterPassword } = user
+        if (name && email && password && (password === reEnterPassword)) {
+
+            axios.post("http://localhost:9002/register", user)
+                .then(res => console.log(res))
+        }
+        else {
+            alert("invalid input")
+        }
+        navigate("/login")
     }
-    else{
-        alert("invalid input")
-    }
-    navigate("/login")
-}
 
 
 
     return (
-        console.log("User",user),
+        console.log("User", user),
         <div className='whole'>
             <h2 className="text-uppercase text-center mb-5">Create an account</h2>
 
-            <form>
+             <form>
 
                 <div className="form-outline mb-4">
                     <input type="text" id="form3Example1cg" className="form-control form-control-lg" name="name" value={user.name} onChange={handleChange}/>
@@ -90,7 +91,9 @@ const register=()=>{
                 <p class="text-center text-muted mt-5 mb-0">Have already an account? <a href="#!"
                     class="fw-bold text-body" onClick={()=>goToLogin()}><u>Login here</u></a></p>
 
-            </form>
+            </form> 
+
+          
 
         </div>
 

@@ -5,6 +5,9 @@ module.exports = {
     extend: {},
   },
   plugins: [],
+  colors: {
+    'custom-color': '#FF00FF', // Replace with your desired custom color code
+  },
 }
 
 

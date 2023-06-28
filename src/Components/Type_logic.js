@@ -1,24 +1,41 @@
 import { useState, useEffect, useRef } from "react";       //imported for focus on input
 import { generate } from 'random-words';                  //random-words is npm package ....generate()... generate random word
-import { useSpeechSynthesis } from 'react-speech-kit';    //libarary for producing sound     
-import index from '../index.css';
+
+import { useSpeechSynthesis } from 'react-speech-kit';    //libarary for producing sound
+
+import Type from './Type.css';
+import index from '../index.css'
 import TextField from '@mui/material/TextField';
-import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
-import { useNavigate, useParams } from "react-router-dom";
- import { Navigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+import Profile from "../Profile/Profile";
+
+
+
+
 
 const NUMB_OF_WORDS = 150;                                //max word in paragraph
 
 
-
 const Type_logic = () => {
-  const {userId}=useParams();
-  const navigate=useNavigate();
-  
+
+  const [me, setMe] = useState("");
+
+
+  const { userid } = useParams();
+
+  const navigate = useNavigate();
+
+  const goToProfile = () => {
+    if (userid != "")
+      navigate("/Profile/" + userid);
+  }
+
   //for timer custmization
-  const [TimerChanger,setTimeChanger]=useState(60);
-  
+  const [TimerChanger, setTimeChanger] = useState(60);
+
   const [words, setWords] = useState([]);                 //words is a array of paragraph with random word
   const [countDown, setCountDown] = useState(TimerChanger);     //state for timer
   const [currInput, setcurrInput] = useState("");            //currently entered char
@@ -31,11 +48,11 @@ const Type_logic = () => {
   //for giving color to char while typing 
   const [currCharIndex, setcurrCharIndex] = useState(-1);    //current char of input 
   const [currChar, setCurrChar] = useState("");
- 
+
   //for producing sound 
   const [value, setValue] = useState('');
-  const { speak } = useSpeechSynthesis();     
-  const [me,setMe]=useState("");
+  const { speak } = useSpeechSynthesis();
+
 
   useEffect(() => {
     setWords(generatewords())                              //jab refresh kiya jata hai to newword is produce
@@ -48,17 +65,12 @@ const Type_logic = () => {
   }, [status]);
 
 
-  const goToProfile=()=>{
-    navigate("/profile/"+userId);
-  }
 
-
-  
   function generatewords() {                            //function generate random array of words
     return new Array(NUMB_OF_WORDS).fill(null).map(() => generate())
   }
 
-   
+
 
 
   function start()                                    //triggered when start button clicked 
@@ -76,8 +88,7 @@ const Type_logic = () => {
       setstatus("started");
       let interval = setInterval(() => {
         setCountDown((pre) => {
-          if (pre === 0) 
-          {
+          if (pre === 0) {
             clearInterval(interval);
             setcurrInput("");
             setstatus("finish");
@@ -93,9 +104,8 @@ const Type_logic = () => {
 
   function handleKeyDown({ keyCode, key })                //triggered when input is given and it recognize the key 
   {
-     
+
     if (keyCode === 32) {                                //if space bar is pressed
-      
       speak({ text: value });                            //whenever space pressed word pronounced ;
       checkMatch();
       setcurrInput("");
@@ -106,8 +116,7 @@ const Type_logic = () => {
       setcurrCharIndex(currCharIndex - 1);
       setCurrChar("");
     }
-    else
-    {
+    else {
       setcurrCharIndex(currCharIndex + 1);               //for other keypress event
       setCurrChar(key);
     }
@@ -127,7 +136,7 @@ const Type_logic = () => {
   function getCharClass(wordIdx, charIdx, char)        //assign color classess on the basis of wrong or right pressed word
   {
     if (wordIdx === currWordIndex && charIdx === currCharIndex && currChar && status != "finish") {
-      
+
       if (char === currChar) {
         return "char_color_green ";                   //class for right char
       }
@@ -139,95 +148,100 @@ const Type_logic = () => {
     else return '';
 
   }
- 
-  //color-class for char word
-  function getwordClass(wordIdx){
-    if(wordIdx===currWordIndex) return "worddd";
+
+  function getwordClass(wordIdx) {
+    if (wordIdx === currWordIndex) return "worddd";
   }
 
-
-  const findname=()=>{
-    axios.get(`http://localhost:9002/getname/${userId}`)
+  const findname = () => {
+    axios.get(`http://localhost:9002/${userid}`) //yeh link me jo store hai isme mil jaygei
       .then(response => {
-           setMe(response.data);
-           console.log("i m here")
+        setMe(response.data);
+
+        console.log("i m here")
       })
       .catch(error => {
         console.log(error);
       });
   }
 
-
-
-  const mywpm=()=>{
-
-    try{
-      axios.post(`http://localhost:9002/updateProfile/${userId}`, {Correct})
-        .then(res=>{
-           console.log("updated");
-           console.log(res.data);
+  const mywpm = () => {
+    try {
+      axios.post(`http://localhost:9002/updateProfile/${userid}`, { Correct })
+        .then(res => {
+          console.log("updated");
+          console.log(res.data);
         })
-        .catch(e=>{
+        .catch(e => {
           alert("oops")
         })
     }
-    catch(error){
-        console.log(error);
+    catch (error) {
+      console.log(error);
     }
   }
 
 
- 
- 
 
 
-  
   return (
     <>
-   {findname()}
-   {me}
 
-   <Button variant="contained" color="success" className='mx-10 flex' onClick={()=>goToProfile()}>profile</Button>
 
-{/*TimerChanger is initialy 60 and that can be changed with select target,,,,
+
+      {/* these will  work for only for logged user not for guest */}
+      {userid && (findname()) && ({ me })}
+
+
+
+
+
+      <>
+      
+          {/*TimerChanger is initialy 60 and that can be changed with select target,,,,
 after setting TimerChanger value we assign it to cuntdouwn,,,,,,,,,,,,,
  jo settimeinterval se decrease ho to jata hai */}
+ <div className="flex item justify-center">
+          {/* timer_custmizer */}
+          <div className="mt-16 mr-72 w-49">
+           
+            <select className=" h-8 w-28 font-semibold bg-gradient-to-r from-yellow-300 to-purple-500 hover:from-pink-500 hover:to-red-500 focus:from-pink-500 focus:to-red-500 rounded"name="Timer" id="Timer" onClick={(event) => {
+              setTimeChanger(event.target.value)
+              //value of counter get updated through Timer dropdown
+              if (status != "started") {
+                setCountDown(event.target.value);
+              }
+            }
+            }> <option value="60">SetTimer</option>
+              <option value="60">  1 Minutes</option>
+              <option value="120"> 2 Minutes</option>
+              <option value="180"> 3 Minutes</option>
+              <option value="300"> 5 Minutes </option>
+            </select>
+          </div>
 
- {/* timer_custmizer */}
-<label for="Timer">Time Duration:</label>
-<select name="Timer" id="Timer"  onClick={(event)=>{
-  setTimeChanger(event.target.value)
 
-  //value of counter get updated through Timer dropdown
-  if(status!="started"){
-    setCountDown(event.target.value);
-  }
-  }
-}>
-   <option value="30"> 1/2 Minute</option>
-  <option value="60"> 1 Minute</option>
-  <option value="120">2 Minute</option>
-  <option value="180">3 Minute</option>
-  <option value="300">5 Minute</option>
-</select>
-
-
-     
           {/*timer component*/}
-      <div className="flex justify-center ... mt-9 ">                               
-        <h2 className="box-content  p-4 border-4 ... px-2 py-2 text-purple-600 text-xl">
-  {countDown}</h2>
-      </div>
-    
+           <div className="mt-9 ml-40 mr-40">
+            <h2 className="box-content  p-4 border-2 rounded-lg ... px-2 py-2 text-gray-100 text-3xl">
+              {countDown}</h2>
+          </div>
 
-    
-         <>
-         {/* paragraph  */}
-         <div className="flex justify-center ... mt-12">
-         <div className=" box-border h-auto w-10/12 p-4 border-4 ...  ">
+            {/* profile button */}
+          <div className="h-5 mt-16  ml-72">{userid && (<Button variant="contained" color="success" className='bg-gradient-to-r from-yellow-300 to-purple-500 hover:from-pink-500 hover:to-red-500 focus:from-pink-500 focus:to-red-500 text-white font-bold py-2 px-4 rounded' onClick={goToProfile}>Profile</Button>)}
+          </div>
+
+        </div>
+
+
+
+
+        {/* paragraph  */}
+        <div className="flex justify-center ... mt-12">
+          <div className="paragraph border-spacing-y-64 box-border h-auto w-10/12 p-4 border-2 rounded-2xl ...  ">
             {words.map((word, i) => (                                  //assign i to every word of words array(random generated)
               <>
-                <span className="italic ... text-2xl font-medium tracking-normal " key={i}>
+                <span className="font-serif text-2xl font-medium tracking-normal " key={i}>
                   <span className={getwordClass(i)}>
                     {word.split("").map((char, idx) => (                //split each word of words array and assign idx
                       <span className={getCharClass(i, idx, char)} key={idx}>{char}</span>
@@ -238,30 +252,30 @@ after setting TimerChanger value we assign it to cuntdouwn,,,,,,,,,,,,,
               </>
             ))}
           </div>
-         </div>
-         </> 
-     
+        </div>
+      </>
 
 
 
 
 
-         
+
+
       {/* input area componet */}
       <div className="flex justify-center ... mt-10">
 
         <label class="relative block w-1/3">
           <span class="absolute inset-y-0 left-0 flex items-center pl-2">
             <svg class="h-5 w-5 fill-slate-300" viewBox="0 0 20 20">
-            ........</svg>
+              ........</svg>
           </span>
           <input ref={textInput} disabled={status != "started"} type="text" onKeyDown={handleKeyDown} value={currInput} onChange={(e) => {
-                 setcurrInput(e.target.value);
-                 setValue(e.target.value);
-                 } 
+            setcurrInput(e.target.value);
+            setValue(e.target.value);
+          }
           }
 
-           className="placeholder:italic placeholder:text-slate-400 block bg-white w-full border border-slate-300 rounded-md py-2 pl-9 pr-3 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm italic ... text-2xl font-medium tracking-normal mt-7 mr-5" placeholder="Write here" />
+            className=" h-15  placeholder:text-slate-400 block bg-white w-full border border-slate-300 rounded-md py-2 pl-9 pr-3 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 lg:text-lg sans-serif font-medium  font-samibold tracking-normal mt-7 mr-5" placeholder="Write here" />
         </label>
 
 
@@ -272,22 +286,23 @@ after setting TimerChanger value we assign it to cuntdouwn,,,,,,,,,,,,,
 
 
         {/* contest start button */}
-        <div className="ml-5 w-49 py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mt-6">
+        <div className=" flex items-center h-12 ml-5 mr-5 text-xl w-28 mt-6 bg-gradient-to-r from-yellow-300 to-purple-500 hover:from-pink-500 hover:to-red-500 focus:from-pink-500 focus:to-red-500 text-white font-bold py-2 px-9 rounded">
           <button onClick={start}>start</button>
         </div>
 
 
-         {/* contest stop button */}
-        <div className="ml-5 w-49 py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mt-6">
-          <button onClick={()=>{
-              setstatus("finish");
-             { start()}
-             setCountDown(1);
+        {/* contest stop button */}
+        <div className=" flex items-center h-12 text-xl w-28 mt-6 bg-gradient-to-r from-yellow-300 to-purple-500 hover:from-pink-500 hover:to-red-500 focus:from-pink-500 focus:to-red-500 text-white font-bold py-2 px-9 rounded">
+
+          <button onClick={() => {
+            setstatus("finish");
+            { start() }
+            setCountDown(1);
           }}>stop</button>
         </div>
 
       </div>
- 
+
 
 
 
@@ -295,22 +310,19 @@ after setting TimerChanger value we assign it to cuntdouwn,,,,,,,,,,,,,
       {/* wpm and accuracy will be shown if contest is ended status ...finish.. */}
       {status === "finish" && (
         <div className=" flex justify-center ...">
-       
-            <div className=" text-purple-600 mr-20 mt-10  text-2xl font-medium tracking-normal">WPM : {Correct}</div>
 
-            <div className="text-purple-600 ml-20 mt-10  text-2xl font-medium tracking-normal" >Accuracy : {Math.round((Correct / (Correct + Incorrect)) * 100)}%</div>
+          <div className=" text-purple-600 mr-20 mt-10  text-2xl font-medium tracking-normal">WPM : {Correct}</div>
 
-            {mywpm()}
-            
+          <div className="text-purple-600 ml-20 mt-10  text-2xl font-medium tracking-normal" >Accuracy : {Math.round((Correct / (Correct + Incorrect)) * 100)}%</div>
+
+
+          {/* for saving wpm of the logged user in db */}
+          {userid && (mywpm())}
+
         </div>
-       
       )}
-   
-     
-
 
     </>
-
   );
 }
 
